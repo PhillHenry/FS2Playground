@@ -1,15 +1,15 @@
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / baseVersion := "0.1.0"
-ThisBuild / organization := "org.systemfw"
-ThisBuild / publishGithubUser := "SystemFw"
-ThisBuild / publishFullName := "Fabio Labella"
+ThisBuild / organization := "uk.co.odinconsultants"
+ThisBuild / publishGithubUser := "PhillHenry"
+ThisBuild / publishFullName := "Phillip Henry"
 
 replaceCommandAlias("ci","; project /; headerCheckAll; clean; testIfRelevant; docs/mdoc; mimaReportBinaryIssuesIfRelevant")
 
 // sbt-sonatype wants these in Global
-Global / homepage := Some(url("https://github.com/SystemFw/FS2Playground"))
-Global / scmInfo := Some(ScmInfo(url("https://github.com/SystemFw/FS2Playground"), "git@github.com:SystemFw/FS2Playground.git"))
+Global / homepage := Some(url("https://github.com/PhillHenry/FS2Playground"))
+Global / scmInfo := Some(ScmInfo(url("https://github.com/PhillHenry/FS2Playground"), "git@github.com:PhillHenry/FS2Playground.git"))
 Global / excludeLintKeys += scmInfo
 ThisBuild / spiewakMainBranches := Seq("main")
 
@@ -39,11 +39,11 @@ lazy val core = project
     name := "FS2Playground-core",
     scalafmtOnCompile := true,
     libraryDependencies ++=
-      dep("org.typelevel", "cats-", "2.3.0")("core")() ++
-      dep("org.typelevel", "cats-effect", "2.3.0")("")("-laws") ++
-      dep("co.fs2", "fs2-", "2.4.6")("core", "io")() ++
+      dep("org.typelevel", "cats-", "2.3.1")("core")() ++
+      dep("org.typelevel", "cats-effect", "3.0-65-7c98c86")("")("-laws") ++
+      dep("co.fs2", "fs2-", "3.0-151-4a45681")("core", "io")() ++
       dep("org.scalameta", "munit", "0.7.19")()("", "-scalacheck") ++
-      dep("org.typelevel", "", "0.11.0")()("munit-cats-effect-2") ++
+      dep("org.typelevel", "", "0.13.0")()("munit-cats-effect-3") ++
       dep("org.typelevel",  "scalacheck-effect", "0.6.0")()("", "-munit")
   )
 
