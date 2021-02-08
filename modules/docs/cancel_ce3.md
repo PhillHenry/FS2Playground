@@ -10,12 +10,15 @@ point):
 import cats.implicits._
 import cats.effect.IO
 import scala.concurrent.duration._
+import cats.effect.unsafe.implicits.global
 
 val server3 = {
   val counter = (0 until 5).toList traverse_ { count =>
-    IO.println(s"running $count")
+    IO { println(s"running $count") }
   }
 
   counter.timeout(2.seconds)
 }
+
+server3.unsafeRunSync()
 ```
