@@ -28,7 +28,7 @@ object CancellationScratchPad extends IOApp {
       afterStart  <- IOs.timeMs
       _           <- f.cancel
       afterCancel <- IOs.timeMs
-      _           <- IOs.printOut(s"start took ${afterStart - beforeStart} ms, cancel took ${afterCancel - afterStart} ms")
+      _           <- IOs.printOut(s"start took ${afterStart - beforeStart} ms, cancel took ${afterCancel - afterStart} ms.")
     } yield ExitCode.Success
   }
 }
