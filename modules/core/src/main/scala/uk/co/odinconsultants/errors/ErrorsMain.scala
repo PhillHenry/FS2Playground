@@ -24,8 +24,8 @@ import uk.co.odinconsultants.IOs
 object ErrorsMain extends IOApp {
 
   type ErrorHandler = PartialFunction[Throwable, Stream[IO, Unit]]
-  val errorHandler: ErrorHandler = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
-  def evilErrorHandler: ErrorHandler = _ match { case t => IOs.evil(t) }
+  val errorHandler: ErrorHandler     = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
+  def evilErrorHandler: ErrorHandler = _ match { case t => Stream.eval(IOs.evil(t)) }
 
   override def run(args: List[String]): IO[ExitCode] = {
     val streamed = Stream(1)
