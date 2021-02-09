@@ -23,18 +23,34 @@ import uk.co.odinconsultants.IOs
 
 object ErrorsMain extends IOApp {
 
+  /**
+   * Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
+   */
   type ErrorHandler = PartialFunction[Throwable, Stream[IO, Unit]]
+
   val errorHandler: ErrorHandler     = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
   def evilErrorHandler: ErrorHandler = _ match { case t => Stream.eval(IOs.evil(t)) }
 
   override def run(args: List[String]): IO[ExitCode] = {
+    streamOnError >> IOs.printOut("That's all folks").as(ExitCode.Success)
+  }
+
+  /** Fabio Labella @SystemFw 12:59 I absolutely agree that this is confusing, but the issue is eval_
+    * that returns Stream[IO, Nothing] meaning that whatever flatMap operation after that doesn't get
+    * executed (just like List().flatMap(f) doesn't execute f)
+    * onError boils down to f(e) >> raiseError(e) , and therefore >> gets skipped
+    */
+  val streamOnError: IO[Unit] = {
+    // original Gitter question says `eval_` [note underscore]. This is deprecated in v3.
+    // `exec` catches the exception, `eval` throws it.
     val streamed = Stream(1)
       .covary[IO]
       .evalMap(_ => IO(throw new Exception("oops")))
-      .onError(_ => Stream.eval(IO.unit))
-//      .onError(errorHandler)
+//      .onError(_ => Stream.exec(IO.unit)) // happy path
+//      .onError(errorHandler) // blows up
+      .onError(evilErrorHandler)
       .compile
       .drain
-    streamed >> IOs.printOut("That's all folks").as(ExitCode.Success)
+    streamed
   }
 }

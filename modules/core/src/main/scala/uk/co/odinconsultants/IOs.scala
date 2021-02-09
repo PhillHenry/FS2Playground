@@ -29,8 +29,8 @@ object IOs {
     t.printStackTrace()
   }
 
-  def evil[T](payload: T): IO[Unit] = printOut(payload) >> IO {
-    throw new Exception(payload.toString)
+  def evil[T](payload: T): IO[Unit] = printOut(s"evil = $payload") >> IO {
+    throw new Exception(s"Exception wrapping $payload")
   }
 
   val timeMs: IO[Long] = IO { System.currentTimeMillis() }
