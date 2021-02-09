@@ -29,6 +29,10 @@ object IOs {
     t.printStackTrace()
   }
 
+  def evil[T](payload: T): IO[Unit] = printOut(payload) >> IO {
+    throw new Exception(payload.toString)
+  }
+
   val timeMs: IO[Long] = IO { System.currentTimeMillis() }
 
   val blockingSleep1s: IO[Unit] = IO {

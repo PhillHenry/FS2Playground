@@ -23,15 +23,18 @@ import uk.co.odinconsultants.IOs
 
 object ErrorsMain extends IOApp {
 
-  def errorHandler: Throwable => IO[Unit] = { t => IOs.stackTrace(t) }
+  type ErrorHandler = PartialFunction[Throwable, Stream[IO, Unit]]
+  val errorHandler: ErrorHandler = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
+  def evilErrorHandler: ErrorHandler = _ match { case t => IOs.evil(t) }
 
   override def run(args: List[String]): IO[ExitCode] = {
-    Stream(1)
+    val streamed = Stream(1)
       .covary[IO]
       .evalMap(_ => IO(throw new Exception("oops")))
       .onError(_ => Stream.eval(IO.unit))
+//      .onError(errorHandler)
       .compile
       .drain
-      .as(ExitCode.Success)
+    streamed >> IOs.printOut("That's all folks").as(ExitCode.Success)
   }
 }
