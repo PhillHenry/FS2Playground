@@ -24,6 +24,11 @@ object IOs {
 
   def printOut(x: Any): IO[Unit] = IO { println(s"printOut: $x") }
 
+  def stackTrace(t: Throwable): IO[Unit] = IO {
+    println(s"stackTrace: ${t.getMessage}")
+    t.printStackTrace()
+  }
+
   val timeMs: IO[Long] = IO { System.currentTimeMillis() }
 
   val blockingSleep1s: IO[Unit] = IO {
