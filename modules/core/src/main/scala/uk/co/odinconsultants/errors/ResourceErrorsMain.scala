@@ -17,7 +17,6 @@
 package uk.co.odinconsultants.errors
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import uk.co.odinconsultants.Resources._
 import uk.co.odinconsultants.IOs._
 
 object ResourceErrorsMain extends IOApp {

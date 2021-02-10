@@ -20,20 +20,45 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 
 import java.io.{ByteArrayOutputStream, PrintStream}
+import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
 object Runner {
 
-  def unsafeRunAndLog[T](x: IO[T]): Unit = Try {
+  /** Execution context that runs everthing synchronously. This can be useful for testing. */
+  object synchronous extends ExecutionContext {
+    def execute(runnable: Runnable): Unit     = runnable.run()
+    def reportFailure(cause: Throwable): Unit = cause.printStackTrace()
+  }
+
+  def unsafeRunAndLog[T](x: IO[T]): Unit = {
+    printing { (printStream, out) =>
+      System.setOut(printStream)
+      System.setErr(printStream)
+      tryUnsafeRunAndLog(x)
+      println(s"Output:\n${stringFrom(out)}")
+    }
+  }
+
+  def tryUnsafeRunAndLog[T](x: IO[T]): Unit = Try {
     x.unsafeRunSync()
   } match {
     case Success(x) => println(s"Success. Result was:\n$x")
     case Failure(e) =>
-      val out         = new ByteArrayOutputStream()
-      val printStream = new PrintStream(out)
-      e.printStackTrace(printStream)
-      println(s"Failed. Exception was:\n${new String(out.toByteArray)}")
-      printStream.close()
+      printing { (printStream, out) =>
+        e.printStackTrace(printStream)
+        println(s"Failed. Exception was:\n${stringFrom(out)}")
+      }
   }
 
+  private def stringFrom(out: ByteArrayOutputStream) = {
+    new String(out.toByteArray)
+  }
+
+  def printing(p: (PrintStream, ByteArrayOutputStream) => Unit): Unit = {
+    val out         = new ByteArrayOutputStream()
+    val printStream = new PrintStream(out)
+    p(printStream, out)
+    printStream.close()
+  }
 }

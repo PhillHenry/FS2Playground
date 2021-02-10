@@ -3,7 +3,7 @@
 ## Resource
 
 One day, there was a happy effect who was very `Resource`ful but an evil
-witch would not release her:
+witch would not release her: 
 
 ```scala mdoc
 import uk.co.odinconsultants.IOs._
