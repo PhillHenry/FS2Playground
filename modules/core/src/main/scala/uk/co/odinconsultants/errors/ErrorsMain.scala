@@ -23,9 +23,8 @@ import uk.co.odinconsultants.IOs
 
 object ErrorsMain extends IOApp {
 
-  /**
-   * Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
-   */
+  /** Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
+    */
   type ErrorHandler = PartialFunction[Throwable, Stream[IO, Unit]]
 
   val errorHandler: ErrorHandler     = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
@@ -43,7 +42,7 @@ object ErrorsMain extends IOApp {
   val streamOnError: IO[Unit] = {
     // original Gitter question says `eval_` [note underscore]. This is deprecated in v3.
     // `exec` catches the exception, `eval` throws it.
-    val streamed = Stream(1)
+    val streamed: IO[Unit] = Stream(1)
       .covary[IO]
       .evalMap(_ => IO(throw new Exception("oops")))
 //      .onError(_ => Stream.exec(IO.unit)) // happy path
@@ -51,6 +50,6 @@ object ErrorsMain extends IOApp {
       .onError(evilErrorHandler)
       .compile
       .drain
-    streamed
+    streamed.guarantee(IOs.printOut("Essentially, this is the finalizer"))
   }
 }
