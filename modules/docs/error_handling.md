@@ -1,3 +1,5 @@
+# Guarantees
+
 Once upon a time, there was a happy effect:
 
 ```scala mdoc
