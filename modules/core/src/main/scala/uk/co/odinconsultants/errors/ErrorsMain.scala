@@ -25,10 +25,10 @@ object ErrorsMain extends IOApp {
 
   /** Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
     */
-  type ErrorHandler = PartialFunction[Throwable, Stream[IO, Unit]]
+  type ErrorHandler[T] = PartialFunction[Throwable, Stream[IO, T]]
 
-  val errorHandler: ErrorHandler     = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
-  def evilErrorHandler: ErrorHandler = _ match { case t => Stream.eval(IOs.evil(t)) }
+  def errorHandler: ErrorHandler[Throwable] = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
+  def evilErrorHandler[T]: ErrorHandler[T]  = _ match { case t: T => Stream.eval(IOs.evil(t)) }
 
   override def run(args: List[String]): IO[ExitCode] = {
     streamOnError >> IOs.printOut("That's all folks").as(ExitCode.Success)
@@ -50,6 +50,6 @@ object ErrorsMain extends IOApp {
       .onError(evilErrorHandler)
       .compile
       .drain
-    streamed.guarantee(IOs.printOut("Essentially, this is the finalizer"))
+    streamed.guarantee(IOs.printOut("Essentially, this is the finalizer")).void
   }
 }

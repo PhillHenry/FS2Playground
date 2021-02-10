@@ -20,16 +20,24 @@ import cats.effect.IO
 
 object IOs {
 
-  val helloWorld: IO[Unit] = IO { println("Hello, world") }
-
-  def printOut(x: Any): IO[Unit] = IO { println(s"printOut: $x") }
-
-  def stackTrace(t: Throwable): IO[Unit] = IO {
-    println(s"stackTrace: ${t.getMessage}")
-    t.printStackTrace()
+  val helloWorld: IO[String] = IO {
+    val msg = "Hello, world"
+    println(msg)
+    msg
   }
 
-  def evil[T](payload: T): IO[Unit] = printOut(s"evil = $payload") >> IO {
+  def printOut[T](x: T): IO[T] = IO {
+    println(s"printOut: $x")
+    x
+  }
+
+  def stackTrace(t: Throwable): IO[Throwable] = IO {
+    println(s"stackTrace: ${t.getMessage}")
+    t.printStackTrace()
+    t
+  }
+
+  def evil[T](payload: T): IO[T] = printOut(s"evil = $payload") >> IO {
     throw new Exception(s"Exception wrapping $payload")
   }
 
