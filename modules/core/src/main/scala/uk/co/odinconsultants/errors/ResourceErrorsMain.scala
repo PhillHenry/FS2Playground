@@ -22,8 +22,6 @@ import uk.co.odinconsultants.IOs._
 
 object ResourceErrorsMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    val res: Resource[IO, String] = resourceBlowsUpOnRelease(helloWorld)
-    val io: IO[String]            = res.use(x => printOut(x))
-    io.as(ExitCode.Success)
+    Resource.make(helloWorld)(_ => evil("nasty release").void).use(x => printOut(x)).as(ExitCode.Success)
   }
 }
