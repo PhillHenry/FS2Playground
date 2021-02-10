@@ -18,7 +18,7 @@ package uk.co.odinconsultants
 
 import cats.effect.IO
 
-object IOs {
+object IOs extends EffectsOutput {
 
   val helloWorld: IO[String] = IO {
     val msg = "Hello, world"

@@ -32,12 +32,10 @@ object Runner {
   }
 
   def unsafeRunAndLog[T](x: IO[T]): Unit = {
-    printing { (printStream, out) =>
-      System.setOut(printStream)
-      System.setErr(printStream)
-      tryUnsafeRunAndLog(x)
-      println(s"Output:\n${stringFrom(out)}")
-    }
+    EffectsOutput.out.reset()
+    tryUnsafeRunAndLog(x)
+    println(s"\nOutput:\n${stringFrom(EffectsOutput.out)}")
+    EffectsOutput.out.reset()
   }
 
   def tryUnsafeRunAndLog[T](x: IO[T]): Unit = Try {
