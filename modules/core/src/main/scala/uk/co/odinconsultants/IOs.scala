@@ -44,7 +44,10 @@ object IOs extends EffectsOutput {
   val timeMs: IO[Long] = IO { System.currentTimeMillis() }
 
   val blockingSleep1s: IO[Unit] = IO {
-    val ms = 1000
+    sleep(1000)
+  }
+
+  def sleep(ms: Long): Unit = {
     println(s"Sleeping for $ms ms...")
     try {
       Thread.sleep(ms)

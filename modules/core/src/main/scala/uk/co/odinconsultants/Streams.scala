@@ -44,6 +44,11 @@ object Streams {
     x
   }
 
+  def sleepAndPrint(n: Int, sleepMs: Long): Stream[IO, Int] = printing(n).map { i =>
+    sleep(sleepMs)
+    i
+  }
+
   def printing(n: Int, start: Int = 1): Stream[IO, Int] =
     Stream.emits(start to start + n - 1).map(printAndReturn)
 }

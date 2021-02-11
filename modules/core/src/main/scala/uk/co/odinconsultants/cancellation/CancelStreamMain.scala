@@ -17,18 +17,11 @@
 package uk.co.odinconsultants.cancellation
 
 import cats.effect.{ExitCode, IO, IOApp}
-import uk.co.odinconsultants.IOs
+import uk.co.odinconsultants.Streams
 
-object CancellationScratchPad extends IOApp {
+object CancelStreamMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      _           <- IOs.helloWorld
-      beforeStart <- IOs.timeMs
-      f           <- IOs.blockingSleep1s.start
-      afterStart  <- IOs.timeMs
-      _           <- f.cancel
-      afterCancel <- IOs.timeMs
-      _           <- IOs.printOut(s"start took ${afterStart - beforeStart} ms, cancel took ${afterCancel - afterStart} ms.")
-    } yield ExitCode.Success
+    val s = Streams.sleepAndPrint(10, 100)
+    s.compile.toList.as(ExitCode.Success)
   }
 }
