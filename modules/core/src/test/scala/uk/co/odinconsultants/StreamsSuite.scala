@@ -16,6 +16,16 @@
 
 package uk.co.odinconsultants
 
-object Hello {
-  def hello(name: String): String = "Hello " + name
+import cats.effect.IO
+import munit.CatsEffectSuite
+import uk.co.odinconsultants.Runner.unsafeRunAndLog
+import uk.co.odinconsultants.Streams.printing
+
+class StreamsSuite extends CatsEffectSuite {
+  val n = 10
+  test(s"streaming $n elements") {
+    val stream         = printing(10)
+    val (result, logs) = unsafeRunAndLog(stream.compile.toList)
+    assertEquals(result.get, (1 to n).toList)
+  }
 }

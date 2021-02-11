@@ -31,22 +31,27 @@ object Runner {
     def reportFailure(cause: Throwable): Unit = cause.printStackTrace()
   }
 
-  def unsafeRunAndLog[T](x: IO[T]): Unit = {
+  def unsafeRunAndLog[T](x: IO[T]): (Option[T], String) = {
     EffectsOutput.out.reset()
-    tryUnsafeRunAndLog(x)
-    println(s"\nOutput:\n${stringFrom(EffectsOutput.out)}")
+    val result       = tryUnsafeRunAndLog(x)
+    val logs: String = stringFrom(EffectsOutput.out)
+    println(s"\nOutput:\n$logs")
     EffectsOutput.out.reset()
+    (result, logs)
   }
 
-  def tryUnsafeRunAndLog[T](x: IO[T]): Unit = Try {
+  def tryUnsafeRunAndLog[T](x: IO[T]): Option[T] = Try {
     x.unsafeRunSync()
   } match {
-    case Success(x) => println(s"Success. Result was:\n$x")
+    case Success(x) =>
+      println(s"Success. Result was:\n$x")
+      Some(x)
     case Failure(e) =>
       printing { (printStream, out) =>
         e.printStackTrace(printStream)
         println(s"Failed. Exception was:\n${stringFrom(out)}")
       }
+      None
   }
 
   private def stringFrom(out: ByteArrayOutputStream) = {

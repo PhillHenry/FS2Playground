@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package uk.co.odinconsultants
+package uk.co.odinconsultants.errors
 
-import munit.CatsEffectSuite
+import cats.effect.{ExitCode, IO, IOApp}
 
-class HelloSuite extends CatsEffectSuite {
-  test("hello") {
-    assertEquals(Hello.hello("you"), "Hello you")
-  }
+object StreamsErrorMain extends IOApp {
+  override def run(args: List[String]): IO[ExitCode] = ???
 }
