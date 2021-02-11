@@ -47,7 +47,7 @@ object Runner {
       println(s"Success. Result was:\n$x")
       Some(x)
     case Failure(e) =>
-      printing { (printStream, out) =>
+      capturing { (printStream, out) =>
         e.printStackTrace(printStream)
         println(s"Failed. Exception was:\n${stringFrom(out)}")
       }
@@ -58,7 +58,7 @@ object Runner {
     new String(out.toByteArray)
   }
 
-  def printing(p: (PrintStream, ByteArrayOutputStream) => Unit): Unit = {
+  def capturing(p: (PrintStream, ByteArrayOutputStream) => Unit): Unit = {
     val out         = new ByteArrayOutputStream()
     val printStream = new PrintStream(out)
     p(printStream, out)

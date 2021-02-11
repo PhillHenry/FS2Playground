@@ -1,5 +1,22 @@
 # Effect Fairytales
 
+
+
+## Streams
+
+One day, there was a bad-tempered `Stream` who always blew up after a certain number:
+
+```scala mdoc
+    import uk.co.odinconsultants.Runner._
+    import uk.co.odinconsultants.Streams._
+
+    unsafeRunAndLog(
+      (blowsUpAfter(10) ++ printing(10, 11)).compile.toList
+    )
+```
+
+
+
 ## Resource
 
 One day, there was a happy effect who was very `Resource`ful but an evil

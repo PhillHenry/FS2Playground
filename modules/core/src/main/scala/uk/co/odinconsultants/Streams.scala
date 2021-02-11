@@ -35,6 +35,6 @@ object Streams {
     x
   }
 
-  def printing(n: Int): Stream[IO, Int] =
-    Stream.emits(1 to n).map(printAndReturn)
+  def printing(n: Int, start: Int = 1): Stream[IO, Int] =
+    Stream.emits(start to start + n - 1).map(printAndReturn)
 }

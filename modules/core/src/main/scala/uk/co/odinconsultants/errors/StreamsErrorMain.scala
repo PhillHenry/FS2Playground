@@ -17,7 +17,23 @@
 package uk.co.odinconsultants.errors
 
 import cats.effect.{ExitCode, IO, IOApp}
+import uk.co.odinconsultants.Streams._
+import uk.co.odinconsultants.IOs._
 
 object StreamsErrorMain extends IOApp {
-  override def run(args: List[String]): IO[ExitCode] = ???
+  override def run(args: List[String]): IO[ExitCode] = {
+
+    val another10: fs2.Stream[IO, Int] = printing(10, 11)
+    val s                              = blowsUpAfter(10) ++ another10
+    s.compile.toList.map(printOut).as(ExitCode.Success)
+  }
+
+  def test() = {
+    import uk.co.odinconsultants.Runner._
+    import uk.co.odinconsultants.Streams._
+
+    unsafeRunAndLog(
+      (blowsUpAfter(10) ++ printing(10, 11)).compile.toList
+    )
+  }
 }
