@@ -21,6 +21,10 @@ import uk.co.odinconsultants.IOs._
 
 object ResourceErrorsMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    Resource.make(helloWorld)(_ => evil("nasty release").void).use(x => printOut(s"use: $x")).as(ExitCode.Success)
+    val unreleasable: Resource[IO, String] = Resource.make(helloWorld)(x => evil(s"Won't release '$x'").void)
+    val useUnreleasable: IO[String]        = unreleasable.use(x => printOut(s"use '$x'"))
+    val onError: IO[String]                = useUnreleasable.onError(x => stackTrace(x).void)
+    val handled: IO[String]                = onError.handleErrorWith(x => stackTrace(x).map(_.getMessage))
+    (handled *> printOut("That's all folks!")).as(ExitCode.Success)
   }
 }

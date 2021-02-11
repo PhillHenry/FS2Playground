@@ -11,10 +11,29 @@ import uk.co.odinconsultants.Runner._
 import uk.co.odinconsultants.Resources._
 import cats.effect.{IO, Resource}
 
+val unreleasable    = Resource.make(helloWorld)(x => evil(s"Won't release '$x'").void)
+val useUnreleasable = unreleasable.use(x => printOut(s"use '$x'"))
+
 unsafeRunAndLog( 
-  Resource.make(helloWorld)(x => evil(s"Won't release '$x'").void).use(x => printOut(s"use '$x'"))
+  useUnreleasable
 )
 ```
+
+When along came a handsome `onError`:
+```scala mdoc
+unsafeRunAndLog( 
+    useUnreleasable.onError(x => stackTrace(x).void)
+)
+```
+However, he was not able to stop the nasty witch from throwing the exception.
+
+Instead, an even more handsome `handleErrorWith` came to the rescue:
+```scala mdoc
+unsafeRunAndLog( 
+    useUnreleasable.handleErrorWith(x => stackTrace(x).map(_.getMessage))
+)
+```
+and was successful in handling the witch's `Exception`.
 
 ## Guarantees
 
