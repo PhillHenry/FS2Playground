@@ -22,6 +22,7 @@ import cats.effect.unsafe.implicits.global
 import java.io.{ByteArrayOutputStream, PrintStream}
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
+import fs2.Stream
 
 object Runner {
 
@@ -41,6 +42,11 @@ object Runner {
 
   def unsafeRunAndLog[T](x: IO[T]): Unit = {
     val (_, logs) = unsafeRunReturnLog(x)
+    println(s"\nOutput:\n$logs")
+  }
+
+  def unsafeRunAndLog[T](s: Stream[IO, T]): Unit = {
+    val (_, logs) = unsafeRunReturnLog(s.compile.toList)
     println(s"\nOutput:\n$logs")
   }
 

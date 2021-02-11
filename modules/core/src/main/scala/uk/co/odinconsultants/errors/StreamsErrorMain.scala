@@ -24,10 +24,10 @@ import fs2.Stream
 object StreamsErrorMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
 
-    val another10: Stream[IO, Int] = printing(10, 11)
-    val s                          = blowsUpAfter(10) ++ another10
-    val handled: Stream[IO, Int]   = s.handleErrorWith(errorHandler.andThen(_.map(_ => -1)))
-    val io: IO[List[Int]]          = handled.compile.toList.flatMap(printOut)
+    val another10: Stream[IO, Int]  = printing(10, 11)
+    val s                           = blowsUpAfter(10) ++ another10
+    val handled: Stream[IO, String] = s.map(_.toString).handleErrorWith(errorHandler.andThen(_.map(_.getMessage)))
+    val io: IO[List[String]]        = handled.compile.toList.flatMap(printOut)
     io.as(ExitCode.Success)
   }
 

@@ -32,6 +32,8 @@ object Streams {
 
   val blowUp: Stream[IO, Int] = Stream.eval(evil(-1))
 
+  def blowsHalfWay(n: Int): Stream[IO, Int] = blowsUpAfter(n / 2) ++ printing(n / 2, (n / 2) + 1)
+
   def blowsUpAfter(n: Int): Stream[IO, Int] =
     printing(n) ++ blowUp
 
