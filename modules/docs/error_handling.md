@@ -12,7 +12,7 @@ import uk.co.odinconsultants.Resources._
 import cats.effect.{IO, Resource}
 
 unsafeRunAndLog( 
-  Resource.make(helloWorld)(x => evil(s"Won't release '$x'").void).use(printOut)
+  Resource.make(helloWorld)(x => evil(s"Won't release '$x'").void).use(x => printOut(s"use '$x'"))
 )
 ```
 
@@ -35,7 +35,7 @@ But nothing bad happened and the happy effect made it to the end.
 Just to be sure, another happy effect guaranteed the happy effect:
 
 ```scala mdoc
-val firstGuaranteeBarfs = helloWorld.guarantee(evil("first guarantee")).guarantee(printOut("second guarantee")) 
+val firstGuaranteeBarfs = helloWorld.guarantee(evil("first guarantee")).guarantee(printOut("second guarantee").void) 
 unsafeRunAndLog(firstGuaranteeBarfs)
 
 ```
@@ -43,7 +43,7 @@ And the happy effect still made it to the end.
 
 So, the evil effect swapped positions:
 ```scala mdoc
-val secondGuaranteeBarfs = helloWorld.guarantee(printOut("second guarantee")).guarantee(evil("first guarantee")) 
+val secondGuaranteeBarfs = helloWorld.guarantee(printOut("second guarantee").void).guarantee(evil("first guarantee")) 
 unsafeRunAndLog(secondGuaranteeBarfs)
 ```
 But the happy effect still made it to the end.

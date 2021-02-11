@@ -37,7 +37,7 @@ object IOs extends EffectsOutput {
     t
   }
 
-  def evil[T](payload: T): IO[T] = printOut(s"evil = $payload") >> IO {
+  def evil[T](payload: T): IO[T] = IO {
     throw new Exception(s"Exception wrapping $payload")
   }
 
