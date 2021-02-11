@@ -19,16 +19,10 @@ package uk.co.odinconsultants.errors
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2._
 import cats.implicits._
-import uk.co.odinconsultants.IOs
+import uk.co.odinconsultants.Streams.evilErrorHandler
+import uk.co.odinconsultants.{IOs, Streams}
 
 object ErrorsMain extends IOApp {
-
-  /** Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
-    */
-  type ErrorHandler[T] = PartialFunction[Throwable, Stream[IO, T]]
-
-  def errorHandler: ErrorHandler[Throwable] = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
-  def evilErrorHandler[T]: ErrorHandler[T]  = _ match { case t: T => Stream.eval(IOs.evil(t)) }
 
   override def run(args: List[String]): IO[ExitCode] = {
     streamOnError >> IOs.printOut("That's all folks").as(ExitCode.Success)

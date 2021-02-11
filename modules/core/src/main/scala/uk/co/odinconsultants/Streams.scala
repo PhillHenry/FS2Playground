@@ -21,6 +21,13 @@ import fs2.{Pure, Stream}
 
 object Streams {
 
+  /** Note in FS2, error handlers handle the error but then effectively rethrow it (raiseError)
+    */
+  type ErrorHandler[T] = PartialFunction[Throwable, Stream[IO, T]]
+
+  def errorHandler: ErrorHandler[Throwable] = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
+  def evilErrorHandler[T]: ErrorHandler[T]  = _ match { case t: T => Stream.eval(IOs.evil(t)) }
+
   import IOs._
 
   val blowUp: Stream[IO, Int] = Stream.eval(evil(-1))

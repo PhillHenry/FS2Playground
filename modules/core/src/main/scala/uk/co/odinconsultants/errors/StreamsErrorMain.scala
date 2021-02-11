@@ -19,21 +19,16 @@ package uk.co.odinconsultants.errors
 import cats.effect.{ExitCode, IO, IOApp}
 import uk.co.odinconsultants.Streams._
 import uk.co.odinconsultants.IOs._
+import fs2.Stream
 
 object StreamsErrorMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
 
-    val another10: fs2.Stream[IO, Int] = printing(10, 11)
-    val s                              = blowsUpAfter(10) ++ another10
-    s.compile.toList.map(printOut).as(ExitCode.Success)
+    val another10: Stream[IO, Int] = printing(10, 11)
+    val s                          = blowsUpAfter(10) ++ another10
+    val handled: Stream[IO, Int]   = s.handleErrorWith(errorHandler.andThen(_.map(_ => -1)))
+    val io: IO[List[Int]]          = handled.compile.toList.flatMap(printOut)
+    io.as(ExitCode.Success)
   }
 
-  def test() = {
-    import uk.co.odinconsultants.Runner._
-    import uk.co.odinconsultants.Streams._
-
-    unsafeRunAndLog(
-      (blowsUpAfter(10) ++ printing(10, 11)).compile.toList
-    )
-  }
 }

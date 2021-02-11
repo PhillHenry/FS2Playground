@@ -31,13 +31,17 @@ object Runner {
     def reportFailure(cause: Throwable): Unit = cause.printStackTrace()
   }
 
-  def unsafeRunAndLog[T](x: IO[T]): (Option[T], String) = {
+  def unsafeRunReturnLog[T](x: IO[T]): (Option[T], String) = {
     EffectsOutput.out.reset()
     val result       = tryUnsafeRunAndLog(x)
     val logs: String = stringFrom(EffectsOutput.out)
-    println(s"\nOutput:\n$logs")
     EffectsOutput.out.reset()
     (result, logs)
+  }
+
+  def unsafeRunAndLog[T](x: IO[T]): Unit = {
+    val (_, logs) = unsafeRunReturnLog(x)
+    println(s"\nOutput:\n$logs")
   }
 
   def tryUnsafeRunAndLog[T](x: IO[T]): Option[T] = Try {

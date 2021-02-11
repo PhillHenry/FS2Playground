@@ -18,7 +18,7 @@ package uk.co.odinconsultants
 
 import cats.effect.IO
 import munit.CatsEffectSuite
-import uk.co.odinconsultants.Runner.unsafeRunAndLog
+import uk.co.odinconsultants.Runner._
 import uk.co.odinconsultants.Streams.{decorate, printing}
 
 class StreamsSuite extends CatsEffectSuite {
@@ -26,7 +26,7 @@ class StreamsSuite extends CatsEffectSuite {
   test(s"streaming $n elements") {
     val expected: List[Int] = (1 to n).toList
     val stream              = printing(10)
-    val (result, logs)      = unsafeRunAndLog(stream.compile.toList)
+    val (result, logs)      = unsafeRunReturnLog(stream.compile.toList)
 
     expected.map(decorate).foreach(x => assert(logs.contains(x)))
     assertEquals(result.get, expected)
