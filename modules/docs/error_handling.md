@@ -13,10 +13,17 @@ unsafeRunAndLog(
   blowsHalfWay(10)
 )
 ```
-Unfortunately, there was no `onError` on the `Stream` and a handsome `handleErrorWith` didn't help:
+Unfortunately, there was no `onError` on the `Stream`. A handsome `handleErrorWith` could stop
+an Exception being thrown but, the `Stream` would still only half complete:
 ```scala mdoc
 unsafeRunAndLog(
   blowsHalfWay(10).map(_.toString).handleErrorWith(errorHandler.andThen(_.map(_.getMessage)))
+)
+```
+Even if it `attempt`ed to process, the `Stream` would not throw an Exception but would stop half way:
+```scala mdoc
+unsafeRunAndLog(
+  blowsHalfWay(10).attempt
 )
 ```
 So, the `Stream` died.

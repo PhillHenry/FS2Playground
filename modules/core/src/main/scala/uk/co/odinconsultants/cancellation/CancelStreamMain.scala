@@ -21,7 +21,8 @@ import uk.co.odinconsultants.Streams
 
 object CancelStreamMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    val s = Streams.sleepAndPrint(10, 100)
-    s.compile.toList.as(ExitCode.Success)
+    val s                 = Streams.sleepAndPrint(10, 100)
+    val io: IO[List[Int]] = s.compile.toList
+    io.as(ExitCode.Success)
   }
 }

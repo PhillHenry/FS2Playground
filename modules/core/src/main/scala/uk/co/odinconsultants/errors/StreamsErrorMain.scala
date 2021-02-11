@@ -27,7 +27,9 @@ object StreamsErrorMain extends IOApp {
     val another10: Stream[IO, Int]  = printing(10, 11)
     val s                           = blowsUpAfter(10) ++ another10
     val handled: Stream[IO, String] = s.map(_.toString).handleErrorWith(errorHandler.andThen(_.map(_.getMessage)))
-    val io: IO[List[String]]        = handled.compile.toList.flatMap(printOut)
+
+    val attempted: Stream[IO, Either[Throwable, String]] = handled.attempt
+    val io                                               = attempted.compile.toList.flatMap(printOut)
     io.as(ExitCode.Success)
   }
 
