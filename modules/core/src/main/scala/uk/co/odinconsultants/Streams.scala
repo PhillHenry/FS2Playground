@@ -28,8 +28,10 @@ object Streams {
   def blowsUpAfter(n: Int): Stream[IO, Int] =
     printing(n) ++ blowUp
 
+  def decorate[T](x: T): String = s"x = $x"
+
   def printAndReturn[T](x: T): T = {
-    println(s"x = $x")
+    println(decorate(x))
     x
   }
 
