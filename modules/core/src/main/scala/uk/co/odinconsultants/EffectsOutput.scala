@@ -16,7 +16,7 @@
 
 package uk.co.odinconsultants
 
-import java.io.{ByteArrayOutputStream, File, PrintStream}
+import java.io.{ByteArrayOutputStream, PrintStream}
 
 trait EffectsOutput {
   def println(x: Any): Unit = {

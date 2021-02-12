@@ -17,20 +17,11 @@
 package uk.co.odinconsultants.errors
 
 import cats.effect.{ExitCode, IO, IOApp}
-import uk.co.odinconsultants.Streams._
+import fs2.Stream
 import uk.co.odinconsultants.IOs._
-import fs2.{Pull, Stream}
+import uk.co.odinconsultants.Streams._
 
 object StreamsErrorMain extends IOApp {
-
-  def checkForExceptions(s: Stream[IO, Int]) =
-    s.pull.uncons.flatMap {
-      _ match {
-        case Some((chunk, rest)) =>
-          ???
-        case None                => Pull.pure(None)
-      }
-    }
 
   override def run(args: List[String]): IO[ExitCode] = {
 

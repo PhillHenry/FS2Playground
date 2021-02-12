@@ -55,5 +55,9 @@ object IOs extends EffectsOutput {
       case x: InterruptedException => println(s"Interrupted ${x.getMessage}")
     }
   }
-
+  val io5                       = helloWorld.guarantee(IO {
+    val msg = "io5"
+    println(s"IO printing '$msg'")
+    msg
+  })
 }

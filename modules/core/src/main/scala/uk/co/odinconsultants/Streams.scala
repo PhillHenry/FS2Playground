@@ -17,7 +17,7 @@
 package uk.co.odinconsultants
 
 import cats.effect.IO
-import fs2.{Pure, Stream}
+import fs2.Stream
 
 object Streams {
 
@@ -26,7 +26,7 @@ object Streams {
   type ErrorHandler[T] = PartialFunction[Throwable, Stream[IO, T]]
 
   def errorHandler: ErrorHandler[Throwable] = _ match { case t => Stream.eval(IOs.stackTrace(t)) }
-  def evilErrorHandler[T]: ErrorHandler[T]  = _ match { case t: T => Stream.eval(IOs.evil(t)) }
+  def evilErrorHandler[T]: ErrorHandler[T]  = _ match { case t => Stream.eval(IOs.evil(t.asInstanceOf[T])) }
 
   import IOs._
 

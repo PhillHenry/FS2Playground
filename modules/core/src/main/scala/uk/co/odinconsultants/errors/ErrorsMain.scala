@@ -17,10 +17,10 @@
 package uk.co.odinconsultants.errors
 
 import cats.effect.{ExitCode, IO, IOApp}
-import fs2._
 import cats.implicits._
+import fs2._
+import uk.co.odinconsultants.IOs
 import uk.co.odinconsultants.Streams.evilErrorHandler
-import uk.co.odinconsultants.{IOs, Streams}
 
 object ErrorsMain extends IOApp {
 
@@ -44,6 +44,6 @@ object ErrorsMain extends IOApp {
       .onError(evilErrorHandler)
       .compile
       .drain
-    streamed.guarantee(IOs.printOut("Essentially, this is the finalizer")).void
+    streamed.guarantee(IOs.printOut("Essentially, this is the finalizer").void).void
   }
 }
