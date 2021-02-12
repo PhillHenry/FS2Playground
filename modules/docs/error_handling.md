@@ -13,7 +13,9 @@ unsafeRunAndLog(
   blowsHalfWay(10)
 )
 ```
-Unfortunately, there was no `onError` on the `Stream`. A handsome `handleErrorWith` could stop
+Unfortunately, there was no `onError` on the `Stream`. 
+
+A handsome `handleErrorWith` could stop
 an Exception being thrown but, the `Stream` would still only half complete:
 ```scala mdoc
 unsafeRunAndLog(

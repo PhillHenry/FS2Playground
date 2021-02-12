@@ -19,9 +19,19 @@ package uk.co.odinconsultants.errors
 import cats.effect.{ExitCode, IO, IOApp}
 import uk.co.odinconsultants.Streams._
 import uk.co.odinconsultants.IOs._
-import fs2.Stream
+import fs2.{Pull, Stream}
 
 object StreamsErrorMain extends IOApp {
+
+  def checkForExceptions(s: Stream[IO, Int]) =
+    s.pull.uncons.flatMap {
+      _ match {
+        case Some((chunk, rest)) =>
+          ???
+        case None                => Pull.pure(None)
+      }
+    }
+
   override def run(args: List[String]): IO[ExitCode] = {
 
     val another10: Stream[IO, Int]  = printing(10, 11)
