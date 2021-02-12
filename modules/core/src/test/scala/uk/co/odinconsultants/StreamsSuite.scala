@@ -16,7 +16,6 @@
 
 package uk.co.odinconsultants
 
-import cats.effect.IO
 import munit.CatsEffectSuite
 import uk.co.odinconsultants.Runner._
 import uk.co.odinconsultants.Streams.{decorate, printing}
