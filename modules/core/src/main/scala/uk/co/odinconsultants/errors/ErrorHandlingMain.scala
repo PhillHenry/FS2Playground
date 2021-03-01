@@ -29,19 +29,35 @@ case object UserExists   extends UserError
 
 object ErrorHandlingMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
+    val unattempted: IO[Int]                                          = triggered(IO(1), 1)
+    val attempted: IO[Either[Throwable, Int]]                         = unattempted.attempt
+    val attemptedLifted: EitherT[IO, Nothing, Either[Throwable, Int]] = EitherT.liftF(attempted)
+//    val unattemptedLifted: EitherT[IO, Nothing, Int] = EitherT.liftF(unattempted)
+//
+//    val attempts: EitherT[IO, Nothing, Either[Throwable, Int]] = for {
+//      x <- attemptedLifted
+//      y <- unattemptedLifted
+//    } yield x
+
+    //    val x: IO[Either[Nothing, Int]] = EitherT.liftF[IO, Nothing, Int](unattempted).value // this would blow up
+    val x: IO[Either[Nothing, Either[Throwable, Int]]] = attemptedLifted.value
+    val printed                                        = x.flatMap(a => IOs.printOut(a))
+    (printed >> variousAttempts).as(ExitCode.Success)
+  }
+
+  def variousAttempts: IO[String] = {
     val attempted: IO[Either[Throwable, String]] = doSomethingDangerous[IO, String].attempt
 
     for {
-      left                       <- attempted
-      _                          <- IOs.printOut(left)
-      unattempted                 = triggered(IO(1), 0)
-      right                      <- unattempted.attempt
-      _                          <- IOs.printOut(right)
-      x: IO[Either[Nothing, Int]] = EitherT.liftF(unattempted).value
-      either                     <- x
-      _                          <- IOs.printOut(either)
+      left                <- attempted
+      _                   <- IOs.printOut(left) // "Left(uk.co.odinconsultants.errors.UserNotFound$)"
+      unattempted: IO[Int] = triggered(IO(1), 0)
+      right               <- unattempted.attempt // Either[Throwable, A]
+      _                   <- IOs.printOut(right) // "Right(1)"
+      either              <- EitherT.liftF[IO, Nothing, Int](unattempted).value // Either[A, B]
+      _                   <- IOs.printOut(either) // "Right(1)"
     } yield {
-      ExitCode.Success
+      s"left = $left, right = $right, either = $either"
     }
   }
 
