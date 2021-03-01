@@ -16,7 +16,7 @@
 
 package uk.co.odinconsultants.errors
 
-import cats.MonadError
+import cats.{Monad, MonadError}
 import cats.effect.{ExitCode, IO, IOApp}
 import uk.co.odinconsultants.IOs
 
@@ -45,8 +45,7 @@ object ErrorHandlingMain extends IOApp {
 //  }
 
   def doSomethingDangerous[G[_], A](implicit G: MonadError[G, Throwable]): G[A] = G.raiseError(UserNotFound)
-//  def doSomethingDangerous2[F[A]: MonadError[F, Throwable]: Monad, A]           = MonadError[F, A].raiseError(UserNotFound)
-
-//  def danger[F[_]: MonadError : Random : Monad, A](a: A): F[A] = Random[F].nextBoolean.
+  def doSomethingDangerous2[F[_]: Monad: MonadError[*[_], Throwable], A]        =
+    MonadError[F, Throwable].raiseError(UserNotFound)
 
 }
