@@ -16,6 +16,7 @@
 
 package uk.co.odinconsultants.errors
 
+import cats.data.EitherT
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.{Applicative, FlatMap, Monad, MonadError}
 import uk.co.odinconsultants.IOs
@@ -31,11 +32,17 @@ object ErrorHandlingMain extends IOApp {
     val attempted: IO[Either[Throwable, String]] = doSomethingDangerous[IO, String].attempt
 
     for {
-      left  <- attempted
-      _     <- IOs.printOut(left)
-      right <- triggered(IO(1), 0).attempt
-      _     <- IOs.printOut(right)
-    } yield ExitCode.Success
+      left                       <- attempted
+      _                          <- IOs.printOut(left)
+      unattempted                 = triggered(IO(1), 0)
+      right                      <- unattempted.attempt
+      _                          <- IOs.printOut(right)
+      x: IO[Either[Nothing, Int]] = EitherT.liftF(unattempted).value
+      either                     <- x
+      _                          <- IOs.printOut(either)
+    } yield {
+      ExitCode.Success
+    }
   }
 
   // this doesn't compile despite being in Practical FP, p213
