@@ -31,8 +31,10 @@ object ErrorHandlingMain extends IOApp {
     val attempted: IO[Either[Throwable, String]] = doSomethingDangerous[IO, String].attempt
 
     for {
-      x <- attempted
-      _ <- IOs.printOut(x)
+      left  <- attempted
+      _     <- IOs.printOut(left)
+      right <- triggered(IO(1), 0).attempt
+      _     <- IOs.printOut(right)
     } yield ExitCode.Success
   }
 
@@ -45,7 +47,7 @@ object ErrorHandlingMain extends IOApp {
 //  }
 
   def doSomethingDangerous[G[_], A](implicit G: MonadError[G, Throwable]): G[A] = G.raiseError(UserNotFound)
-  def triggered[F[_]: Monad: MonadError[*[_], Throwable], A](fa: F[A])(trigger: A): F[A] = {
+  def triggered[F[_]: Monad: MonadError[*[_], Throwable], A](fa: F[A], trigger: A): F[A] = {
     FlatMap[F].flatMap(fa) { a: A =>
       if (a == trigger) {
         val x: F[A] = MonadError[F, Throwable].raiseError(UserNotFound)
