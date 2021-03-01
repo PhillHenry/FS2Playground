@@ -16,8 +16,8 @@
 
 package uk.co.odinconsultants.errors
 
-import cats.{Monad, MonadError}
 import cats.effect.{ExitCode, IO, IOApp}
+import cats.{Applicative, FlatMap, Monad, MonadError}
 import uk.co.odinconsultants.IOs
 
 import scala.util.control.NoStackTrace
@@ -45,7 +45,15 @@ object ErrorHandlingMain extends IOApp {
 //  }
 
   def doSomethingDangerous[G[_], A](implicit G: MonadError[G, Throwable]): G[A] = G.raiseError(UserNotFound)
-  def doSomethingDangerous2[F[_]: Monad: MonadError[*[_], Throwable], A]        =
-    MonadError[F, Throwable].raiseError(UserNotFound)
+  def triggered[F[_]: Monad: MonadError[*[_], Throwable], A](fa: F[A])(trigger: A): F[A] = {
+    FlatMap[F].flatMap(fa) { a: A =>
+      if (a == trigger) {
+        val x: F[A] = MonadError[F, Throwable].raiseError(UserNotFound)
+        x
+      } else {
+        Applicative[F].pure(a)
+      }
+    }
+  }
 
 }
