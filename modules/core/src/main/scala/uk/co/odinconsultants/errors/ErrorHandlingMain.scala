@@ -29,9 +29,9 @@ case object UserExists   extends UserError
 
 object ErrorHandlingMain extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    val unattempted: IO[Int]                                          = triggered(IO(1), 1)
-    val attempted: IO[Either[Throwable, Int]]                         = unattempted.attempt
-    val attemptedLifted: EitherT[IO, Nothing, Either[Throwable, Int]] = EitherT.liftF(attempted)
+    val unattempted: IO[Int]                                            = triggered(IO(1), 1)
+    val attempted: IO[Either[Throwable, Int]]                           = unattempted.attempt
+    val attemptedLifted: EitherT[IO, Throwable, Either[Throwable, Int]] = EitherT.liftF(attempted)
 //    val unattemptedLifted: EitherT[IO, Nothing, Int] = EitherT.liftF(unattempted)
 //
 //    val attempts: EitherT[IO, Nothing, Either[Throwable, Int]] = for {
@@ -40,8 +40,8 @@ object ErrorHandlingMain extends IOApp {
 //    } yield x
 
     //    val x: IO[Either[Nothing, Int]] = EitherT.liftF[IO, Nothing, Int](unattempted).value // this would blow up
-    val x: IO[Either[Nothing, Either[Throwable, Int]]] = attemptedLifted.value
-    val printed                                        = x.flatMap(a => IOs.printOut(a))
+    val x: IO[Either[Throwable, Either[Throwable, Int]]] = attemptedLifted.value
+    val printed                                          = x.flatMap(a => IOs.printOut(a))
     (printed >> variousAttempts).as(ExitCode.Success)
   }
 
@@ -70,6 +70,8 @@ object ErrorHandlingMain extends IOApp {
 //  }
 
   def doSomethingDangerous[G[_], A](implicit G: MonadError[G, Throwable]): G[A] = G.raiseError(UserNotFound)
+  def doSomethingDangerous2[G[_]: MonadError[*[_], Throwable], A]: G[A]         =
+    MonadError[G, Throwable].raiseError(UserNotFound)
   def triggered[F[_]: Monad: MonadError[*[_], Throwable], A](fa: F[A], trigger: A): F[A] = {
     FlatMap[F].flatMap(fa) { a: A =>
       if (a == trigger) {
