@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.co.odinconsultants.fs2
+package uk.co.odinconsultants.my_fs2
 
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.Stream
