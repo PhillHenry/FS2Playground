@@ -26,20 +26,33 @@ object CommitSudoku2 extends IOApp {
     Resource
       .make(Semaphore[F](1))(_.acquire)
       .map { sem => (a: A) =>
-        val used: F[B] = sem.permit.use(_ => handleItem(a))
+        val permit: Resource[F, Unit] = sem.permit
+        val used: F[B]                = permit.use(_ => handleItem(a))
         used //.uncancelable
       }
 
   def processItem(int: Int): IO[Unit] =
     IO(println(s"Processing ${int}")) >>
-      IO.sleep(20.seconds) >>
+      IO.sleep(2.seconds) >>
       IO(println(s"Done processing ${int}"))
+
+  def processItemUncanellable(x: String): IO[Unit] = ???
 
   override def run(args: List[String]): IO[ExitCode] = {
     safe(processItem).use { f =>
       def loop(a: Int): IO[Unit] = f(a) >> loop(a + 1)
 
-      loop(0).as(ExitCode.Success)
+      val loopCounting: IO[Unit] = loop(0)
+
+      val proc = for {
+        t <- loopCounting.start
+        _ <- processItem(-99)
+        _ <- t.cancel
+      } yield IO {
+        println("Cancelled")
+      }
+
+      proc.as(ExitCode.Success)
     }
   }
 }
