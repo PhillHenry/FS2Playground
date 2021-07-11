@@ -34,14 +34,17 @@ object CommitSudoku2 extends IOApp {
         used //.uncancelable
       }
 
-  def processItem(int: Int): IO[Unit] =
+  def printSleepPrint(int: Int): IO[Unit] =
     message(s"Processing ${int}") >>
       IO.sleep(2.seconds) >>
       message(s"Done processing ${int}")
 
   def processItemUncancellable(x: Int): IO[Unit] = IO.uncancelable { _ =>
-    loop(processItem)(x)
+    loop(printSleepPrint)(x)
   }
+
+  def processItemCancellable(x: Int): IO[Unit] =
+    loop(printSleepPrint)(x)
 
   def loop(f: Int => IO[Unit])(a: Int): IO[Unit] = f(a) >> loop(f)(a + 1)
 
@@ -51,7 +54,7 @@ object CommitSudoku2 extends IOApp {
 
       val proc = for {
         t <- loopCounting.start
-        _ <- processItem(-99)
+        _ <- printSleepPrint(-99)
         _ <- t.cancel
       } yield IO {
         println("Cancelled")
