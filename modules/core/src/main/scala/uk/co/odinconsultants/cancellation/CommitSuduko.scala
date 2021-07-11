@@ -22,6 +22,9 @@ import cats.effect._
 import scala.concurrent.duration._
 
 object CommitSudoku2 extends IOApp {
+
+  def message(x: Any): IO[Unit] = IO { println(s"${new java.util.Date()}: $x") }
+
   def safe[F[_]: Concurrent, A, B, MonadCancel](handleItem: A => F[B]): Resource[F, A => F[B]] =
     Resource
       .make(Semaphore[F](1))(_.acquire)
@@ -32,17 +35,21 @@ object CommitSudoku2 extends IOApp {
       }
 
   def processItem(int: Int): IO[Unit] =
-    IO(println(s"Processing ${int}")) >>
+    message(s"Processing ${int}") >>
       IO.sleep(2.seconds) >>
-      IO(println(s"Done processing ${int}"))
+      message(s"Done processing ${int}")
 
-  def processItemUncanellable(x: String): IO[Unit] = ???
+  def processItemUncancellable(x: Int): IO[Unit] = IO.uncancelable { _ =>
+    message(s"In uncancellable block: $x") >>
+      IO.sleep(3.second) >>
+      message(s"Finished sleeping with $x")
+  }
+
+  def loop(f: Int => IO[Unit])(a: Int): IO[Unit] = f(a) >> loop(f)(a + 1)
 
   override def run(args: List[String]): IO[ExitCode] = {
-    safe(processItem).use { f =>
-      def loop(a: Int): IO[Unit] = f(a) >> loop(a + 1)
-
-      val loopCounting: IO[Unit] = loop(0)
+    safe(processItemUncancellable).use { f =>
+      val loopCounting: IO[Unit] = loop(f)(0)
 
       val proc = for {
         t <- loopCounting.start
