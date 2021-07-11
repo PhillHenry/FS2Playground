@@ -40,10 +40,7 @@ object CommitSudoku2 extends IOApp {
       message(s"Done processing ${int}")
 
   def processItemUncancellable(x: Int): IO[Unit] = IO.uncancelable { _ =>
-    val io = message(s"In uncancellable block: $x") >>
-      IO.sleep(3.second) >>
-      message(s"Finished sleeping with $x")
-    loop(_ => io)(x)
+    loop(processItem)(x)
   }
 
   def loop(f: Int => IO[Unit])(a: Int): IO[Unit] = f(a) >> loop(f)(a + 1)
