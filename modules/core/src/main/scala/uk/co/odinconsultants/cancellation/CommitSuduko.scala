@@ -39,17 +39,17 @@ object CommitSudoku2 extends IOApp {
       IO.sleep(2.seconds) >>
       message(s"Done processing ${int}")
 
-  def processItemUncancellable(x: Int): IO[Unit] = IO.uncancelable { _ =>
+  def processItemUncancelable(x: Int): IO[Unit] = IO.uncancelable { _ =>
     loop(printSleepPrint)(x)
   }
 
-  def processItemCancellable(x: Int): IO[Unit] =
+  def processItemCancelable(x: Int): IO[Unit] =
     loop(printSleepPrint)(x)
 
   def loop(f: Int => IO[Unit])(a: Int): IO[Unit] = f(a) >> loop(f)(a + 1)
 
   override def run(args: List[String]): IO[ExitCode] = {
-    safe(processItemUncancellable).use { f =>
+    safe(processItemCancelable).use { f =>  // using processItemUncancelable goes on forever
       val loopCounting: IO[Unit] = loop(f)(0)
 
       val proc = for {
