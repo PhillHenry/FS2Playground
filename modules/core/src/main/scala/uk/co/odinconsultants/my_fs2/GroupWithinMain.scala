@@ -34,7 +34,16 @@ object GroupWithinMain extends IOApp {
       .evalTap(i => IO(println(s"pulled $i")))
       .groupWithin(10, 10.seconds)
       .take(3)
-    stream.compile.toList.as(ExitCode.Success)
+    stream.compile.toList
+      .map { xs =>
+        // note: only chunks 1-10, 11-20, 21-30 are printed here despite the 'pulled' line above
+        // print to "pulled 41"
+        println(s"length = ${xs.length}")
+        for (x <- xs) yield {
+          println(s"length ${x.toList.length}: $x")
+        }
+      }
+      .as(ExitCode.Success)
   }
 
 }

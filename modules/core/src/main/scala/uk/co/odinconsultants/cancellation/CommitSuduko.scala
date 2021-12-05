@@ -49,7 +49,7 @@ object CommitSudoku2 extends IOApp {
   def loop(f: Int => IO[Unit])(a: Int): IO[Unit] = f(a) >> loop(f)(a + 1)
 
   override def run(args: List[String]): IO[ExitCode] = {
-    safe(processItemCancelable).use { f =>  // using processItemUncancelable goes on forever
+    safe(processItemCancelable).use { f => // using processItemUncancelable goes on forever
       val loopCounting: IO[Unit] = loop(f)(0)
 
       val proc = for {
