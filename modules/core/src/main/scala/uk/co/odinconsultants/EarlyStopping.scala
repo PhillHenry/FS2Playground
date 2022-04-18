@@ -19,10 +19,9 @@ package uk.co.odinconsultants
 import cats.implicits._
 import cats.effect.{ExitCode, IO, IOApp}
 
-/**
- * SystemFw — 6/1/22 4:30 PM
-you can also use Stream which gives you other options such as takeWhile or takeThrough
- */
+/** SystemFw — 6/1/22 4:30 PM
+  * you can also use Stream which gives you other options such as takeWhile or takeThrough
+  */
 object EarlyStopping extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     def a = IO.println("a").as(true)
