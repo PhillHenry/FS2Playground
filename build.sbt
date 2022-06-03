@@ -13,8 +13,8 @@ Global / scmInfo := Some(ScmInfo(url("https://github.com/PhillHenry/FS2Playgroun
 Global / excludeLintKeys += scmInfo
 ThisBuild / spiewakMainBranches := Seq("main")
 
-ThisBuild / crossScalaVersions := Seq("3.0.0-M2", "2.12.10", "2.13.4")
-ThisBuild / versionIntroduced := Map("3.0.0-M2" -> "3.0.0")
+ThisBuild / crossScalaVersions := Seq("3.1.2", "2.12.10", "2.13.4")
+ThisBuild / versionIntroduced := Map("3.1.2" -> "3.1.2")
 
 ThisBuild / initialCommands := """
   |import cats._, data._, syntax.all._
@@ -40,7 +40,7 @@ lazy val core = project
     scalafmtOnCompile := true,
     libraryDependencies ++=
       dep("org.typelevel", "cats-effect", "3.1.1")("")("-laws") ++
-      dep("co.fs2", "fs2-", "3.0.5")("core", "io")() ++
+      dep("co.fs2", "fs2-", "3.2.7")("core", "io")() ++
       dep("org.scalameta", "munit", "0.7.26")()("", "-scalacheck") ++
       dep("org.typelevel", "", "0.13.0")()("munit-cats-effect-3") ++ dep("org.typelevel",  "scalacheck-effect", "0.6.0")()("", "-munit")
   )
