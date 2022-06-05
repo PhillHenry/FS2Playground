@@ -38,7 +38,15 @@ object IOs extends EffectsOutput {
   }
 
   def evil[T](payload: T): IO[T] = IO {
-    throw new Exception(s"Exception wrapping $payload")
+    throw exception(payload)
+  }
+
+  def exception[T](payload: T): Exception = {
+    new Exception(exceptionMessage(payload))
+  }
+
+  def exceptionMessage[T](payload: T): String = {
+    s"Exception wrapping $payload"
   }
 
   val timeMs: IO[Long] = IO { System.currentTimeMillis() }

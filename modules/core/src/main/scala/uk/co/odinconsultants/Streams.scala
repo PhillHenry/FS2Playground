@@ -30,7 +30,8 @@ object Streams {
 
   import IOs._
 
-  val blowUp: Stream[IO, Int] = Stream.eval(evil(-1))
+  val EvilPayload: Int        = -1
+  val blowUp: Stream[IO, Int] = Stream.eval(evil(EvilPayload))
 
   def blowsHalfWay(n: Int): Stream[IO, Int] = blowsUpAfter(n / 2) ++ printing(n / 2, (n / 2) + 1)
 

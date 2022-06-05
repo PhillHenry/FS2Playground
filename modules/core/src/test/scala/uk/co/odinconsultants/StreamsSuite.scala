@@ -17,17 +17,28 @@
 package uk.co.odinconsultants
 
 import munit.CatsEffectSuite
+import uk.co.odinconsultants.IOs.exception
 import uk.co.odinconsultants.Runner._
-import uk.co.odinconsultants.Streams.{decorate, printing}
+import uk.co.odinconsultants.Streams._
 
 class StreamsSuite extends CatsEffectSuite {
   val n = 10
-  test(s"streaming $n elements") {
+  test(s"streaming $n elements (happy path)") {
     val stream         = printing(n)
     val (result, logs) = unsafeRunReturnLog(stream.compile.toList)
-
-    val expected: List[Int] = (1 to n).toList
-    expected.map(decorate).foreach(x => assert(logs.contains(x)))
+    val expected       = checkEffects(logs, n)
     assertEquals(result.get, expected)
+  }
+  test(s"streaming $n elements where the streams blows up half way") {
+    val stream         = blowsHalfWay(n)
+    val (result, logs) = unsafeRunReturnLog(stream.handleErrorWith(errorHandler).compile.toList)
+    val expected       = checkEffects(logs, n / 2)
+    assertEquals(result.get.map(_.toString), (expected :+ exception(EvilPayload)).map(_.toString))
+  }
+
+  private def checkEffects(logs: String, numExpected: Int): List[Int] = {
+    val expected: List[Int] = (1 to numExpected).toList
+    expected.map(decorate).foreach(x => assert(logs.contains(x)))
+    expected
   }
 }
