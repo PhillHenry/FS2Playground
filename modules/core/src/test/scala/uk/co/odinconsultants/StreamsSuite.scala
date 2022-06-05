@@ -23,10 +23,10 @@ import uk.co.odinconsultants.Streams.{decorate, printing}
 class StreamsSuite extends CatsEffectSuite {
   val n = 10
   test(s"streaming $n elements") {
-    val expected: List[Int] = (1 to n).toList
-    val stream              = printing(10)
-    val (result, logs)      = unsafeRunReturnLog(stream.compile.toList)
+    val stream         = printing(n)
+    val (result, logs) = unsafeRunReturnLog(stream.compile.toList)
 
+    val expected: List[Int] = (1 to n).toList
     expected.map(decorate).foreach(x => assert(logs.contains(x)))
     assertEquals(result.get, expected)
   }
