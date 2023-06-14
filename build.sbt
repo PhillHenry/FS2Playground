@@ -13,8 +13,9 @@ Global / scmInfo := Some(ScmInfo(url("https://github.com/PhillHenry/FS2Playgroun
 Global / excludeLintKeys += scmInfo
 ThisBuild / spiewakMainBranches := Seq("main")
 
-ThisBuild / crossScalaVersions := Seq("3.1.2", "2.12.10", "2.13.4")
-ThisBuild / versionIntroduced := Map("3.1.2" -> "3.1.2")
+val scala3 = "3.3.0"
+ThisBuild / crossScalaVersions := Seq(scala3, "2.12.10", "2.13.4")
+ThisBuild / versionIntroduced := Map(scala3 -> scala3)
 
 ThisBuild / initialCommands := """
   |import cats._, data._, syntax.all._
@@ -29,6 +30,9 @@ ThisBuild / testFrameworks += new TestFramework("munit.Framework")
 
 lazy val root = project
   .in(file("."))
+  .settings(
+    name := "F22Playground"
+  )
   .enablePlugins(NoPublishPlugin, SonatypeCiReleasePlugin)
   .aggregate(core)
 
@@ -63,6 +67,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-encoding", "utf8", // Option and arguments on same line
   "-Xfatal-warnings",  // New lines for each options
   "-Ywarn-value-discard",
+  "-Wunused",
   "-deprecation",
   "-unchecked",
   "-language:implicitConversions",
